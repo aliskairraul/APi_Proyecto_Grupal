@@ -24,14 +24,41 @@ router = APIRouter(
 
 @router.get("/", status_code=status.HTTP_200_OK)
 async def get_recomendations(request_app: BaseRecommendationRequest) -> BaseRecomendations:
+    """
+    get_recomendations: recibe una peticion GET con payload con la estructura de BaseRecommendationRequest
+                        y devuelve las n recomendaciones solicitadas con la estructura BaseRecomendations
+
+    Args:
+        request_app (BaseRecommendationRequest): Datos de la Peticion:
+                                                    id del usuario al que se le realizara las recomendaciones
+                                                    Estado donde quiere las recomendaciones
+                                                    Categoría de la cual quiere las recomendaciones
+                                                    Número de recomendaciones
+    Raises:
+        HTTPException: En caso de una mala solicitud da una respuesta con codigo 400 y mensaje `BAD REQUEST`
+
+    Returns:
+        BaseRecomendations: Lista de Diccionarios con esta estructura, que contiene las recomendaciones
+                            devuelve por cada recomendacion
+                            id del negocio
+                            Direccion del mismo
+                            Ciudad en que se encuentra
+                            Coordenada Latitud
+                            Coordenada Longitud
+    """
 
     try:
+        if request_app.state.strip().upper() not in df_business['state'].unique().tolist():
+            raise HTTPException(status_code=400, detail="BAD REQUEST")
+        if request_app.category.strip().lower() != 'normal':
+            raise HTTPException(status_code=400, detail="BAD REQUEST")
+
         # Obteniendo el ID Entero del usuario
-        mask = df_user_ids['user_id'] == request_app.user_id_str
+        mask = df_user_ids['user_id'] == request_app.user_id_str.strip()
         user_id = int(df_user_ids[mask]['user_id_int'].values[0])
 
         # Creando la lista de Negocios Segun el estado
-        mask = df_business['state'] == request_app.state
+        mask = df_business['state'] == request_app.state.strip().upper()
         business_id_list = df_business[mask]['business_id_int'].tolist()
 
         # Aplicando procedimiento estandard de LightFm para obtener Recomendaciones
