@@ -2,12 +2,20 @@ from pydantic import BaseModel
 
 
 class BaseRecommendation(BaseModel):
-    business_id: str
-    name: str
-    city: str
-    address: str
-    latitude: float
-    longitude: float
+    negocio: str
+    direccion: str
+    ciudad: str
+    estado: str
+    lunes: str
+    martes: str
+    miercoles: str
+    jueves: str
+    viernes: str
+    sabado: str
+    domingo: str
+    distancia: float
+    latitud: float
+    longitud: float
 
 
 class BaseRecomendations(BaseModel):
@@ -15,7 +23,9 @@ class BaseRecomendations(BaseModel):
 
 
 class BaseRecommendationRequest(BaseModel):
-    state: str
-    user_id_str: str
-    category: str | None
-    top_n: int = 5
+    km: int
+    estado: str
+    ciudad: str
+    usuario: str
+    caracteristicas: list
+    categorias: list
